@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "iomanip": "cpp",
+        "unordered_map": "cpp",
+        "cmath": "cpp"
+    }
+}

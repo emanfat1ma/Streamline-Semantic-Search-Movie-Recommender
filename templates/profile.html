@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - MovieFlux{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Header -->
+    <div class="profile-header">
+        <h1>Who's Watching?</h1>
+        <p class="subtitle">Select a profile or create a new one</p>
+    </div>
+
+    <!-- Profiles Grid -->
+    <div class="profiles-grid">
+        {% for profile in profiles %}
+        <div class="profile-card {% if profile.id == active_profile_id %}active-profile{% endif %}" data-profile-id="{{ profile.id }}">
+            <div class="profile-avatar" style="background-color: {{ profile.avatar_color }};">
+                {{ profile.name[0].upper() }}
+                {% if profile.is_active %}
+                <span class="active-badge">✓</span>
+                {% endif %}
+            </div>
+            <h3 class="profile-name">{{ profile.name }}</h3>
+            {% if profile.id == active_profile_id %}
+            <span class="profile-status">Active</span>
+            {% else %}
+            <form action="/switch_profile" method="POST" class="switch-profile-form">
+                <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                <button type="submit" class="btn-switch">Switch</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <!-- Add Profile Card -->
+        <div class="profile-card add-profile-card" id="addProfileCard">
+            <div class="profile-avatar add-avatar">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </div>
+            <h3 class="profile-name">Add Profile</h3>
+        </div>
+    </div>
+
+    <!-- Add Profile Form (Hidden Initially) -->
+    <div class="add-profile-form" id="addProfileForm" style="display: none;">
+        <h3>Add New Profile</h3>
+        <form action="/add_profile" method="POST" id="newProfileForm">
+            <input type="text" name="profile_name" placeholder="Profile Name" required maxlength="20" class="form-input">
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="cancelAddProfile">Cancel</button>
+                <button type="submit" class="btn-primary">Create Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- My List Section -->
+    <div class="my-list-section">
+        <div class="section-header">
+            <h2>My List</h2>
+            <span class="item-count">{{ watchlist|length }} items</span>
+        </div>
+        
+        {% if watchlist %}
+        <div class="watchlist-grid">
+            {% for movie in watchlist %}
+            <div class="watchlist-item">
+                <div class="item-poster">
+                    <img src="{{ movie.poster_url if movie.poster_url else 'https://via.placeholder.com/150x225' }}" 
+                         alt="{{ movie.title }}"
+                         onerror="this.src='https://via.placeholder.com/150x225'">
+                    <div class="item-overlay">
+                        <button class="btn-remove-watchlist" data-movie-title="{{ movie.title }}" title="Remove from My List">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13H5v-2h14v2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="item-info">
+                    <h4>{{ movie.title }}</h4>
+                    <p class="item-added">Added {{ movie.added_at[:10] if movie.added_at else '' }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-watchlist">
+            <p>Your list is empty. Add movies to watch later!</p>
+            <a href="/" class="btn-primary">Browse Movies</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Profile Toggle
+    const addProfileCard = document.getElementById('addProfileCard');
+    const addProfileForm = document.getElementById('addProfileForm');
+    const cancelBtn = document.getElementById('cancelAddProfile');
+    
+    if (addProfileCard) {
+        addProfileCard.addEventListener('click', function() {
+            addProfileForm.style.display = 'block';
+            addProfileCard.style.display = 'none';
+        });
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            addProfileForm.style.display = 'none';
+            addProfileCard.style.display = 'flex';
+        });
+    }
+    
+    // Remove from watchlist
+    document.querySelectorAll('.btn-remove-watchlist').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const movieTitle = this.dataset.movieTitle;
+            if (!confirm(`Remove "${movieTitle}" from My List?`)) return;
+            
+            fetch('/toggle_watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `movie_title=${encodeURIComponent(movieTitle)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Refresh to show updated list
+                }
+            });
+        });
+    });
+    
+    // Switch profile forms
+    document.querySelectorAll('.switch-profile-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('/switch_profile', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/'; // Go to home with new profile
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
+
+<style>
+/* Inline styles for profile page to ensure they load */
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+</style>
