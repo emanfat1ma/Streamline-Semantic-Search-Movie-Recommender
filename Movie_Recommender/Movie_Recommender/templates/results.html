@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head><title>Results</title></head>
+<body>
+<h1>Recommended Movies</h1>
+<a href="/">New Search</a>
+<ul>
+{% for movie in results %}
+<li>
+    <h3>{{ movie.title }}</h3>
+    <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+    <p>{{ movie.description }}</p>
+</li>
+{% endfor %}
+</ul>
+</body>
+</html>
