@@ -1,16 +1,30 @@
+import os
 import pickle
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from .model_utils import get_model
+
+# Get the absolute path to the data folder
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EMBEDDINGS_PATH = os.path.join(BASE_DIR, 'data', 'movie_embeddings.pkl')
 
 def semantic_search(query, movies, top_n=50):
     """Return top-N semantically similar movies based on query."""
     if not query or not query.strip():
         return []
     
-    # Load precomputed embeddings
-    with open("data/movie_embeddings.pkl", "rb") as f:
-        embeddings = pickle.load(f)
+    # 1. Safety Check: Verify if the file exists before opening
+    if not os.path.exists(EMBEDDINGS_PATH):
+        print(f"CRITICAL ERROR: Search file not found at {EMBEDDINGS_PATH}")
+        return []
+
+    # 2. Load precomputed embeddings using the absolute path
+    try:
+        with open(EMBEDDINGS_PATH, "rb") as f:
+            embeddings = pickle.load(f)
+    except Exception as e:
+        print(f"Error loading embeddings: {e}")
+        return []
     
     # Encode user query
     model = get_model()
@@ -27,4 +41,5 @@ def semantic_search(query, movies, top_n=50):
     for movie in results:
         if not isinstance(movie.get("overview"), str):
             movie["overview"] = "No description available"
+            
     return results

@@ -14,20 +14,19 @@ import hashlib
 from model.user_model import get_user_profiles, switch_active_profile, get_watchlist, add_to_watchlist, remove_from_watchlist, is_in_watchlist, create_profile
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-EMBEDDINGS_PATH = os.path.join(BASE_DIR, 'data', 'movie_embeddings.pkl')
 app = Flask(__name__,
             template_folder=os.path.join(base_dir, '..', 'templates'),
             static_folder=os.path.join(base_dir, '..', 'static'))
 app.secret_key = "supersecretkey"   # change in real project
 
+db_path = os.path.join(base_dir, "..", "data", "database.db")
+data_csv_path = os.path.abspath(os.path.join(base_dir, "..", "data", "movies_clean_with_posters.csv"))
 
-data_path = os.path.join(base_dir, "..", "data", "movies_clean_with_posters.csv")
-
-movies = pd.read_csv(data_path)
+movies = pd.read_csv(data_csv_path)
 
 def get_db_connection():
     """Connects to the database and sets row_factory for column access."""
-    conn = sqlite3.connect("data/database.db")
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row  # Allows accessing columns by name
     return conn
 
@@ -39,7 +38,7 @@ def user_logged_in():
     return "user_id" in session
 
 def get_user_likes(user_id):
-    conn = sqlite3.connect("data/database.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT movie_id FROM user_likes WHERE user_id=?", (user_id,))
     rows = cursor.fetchall()
