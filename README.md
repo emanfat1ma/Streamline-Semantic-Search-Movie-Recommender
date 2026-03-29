@@ -12,7 +12,6 @@ An undergraduate AI project for NUST featuring Semantic Search and Hybrid Recomm
 ![Search Results](./docs/images/search_results.png)
 
 ## 🛠️ Quick Start (Local Only)
-> **Note:** Due to the 5GB size of the AI models, this project must be run locally.
 
 1. **Install Dependencies:**
    ```bash
