@@ -14,7 +14,7 @@ import hashlib
 from model.user_model import get_user_profiles, switch_active_profile, get_watchlist, add_to_watchlist, remove_from_watchlist, is_in_watchlist, create_profile
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
+EMBEDDINGS_PATH = os.path.join(BASE_DIR, 'data', 'movie_embeddings.pkl')
 app = Flask(__name__,
             template_folder=os.path.join(base_dir, '..', 'templates'),
             static_folder=os.path.join(base_dir, '..', 'static'))
