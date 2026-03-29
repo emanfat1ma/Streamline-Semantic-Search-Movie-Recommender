@@ -11,7 +11,7 @@ An undergraduate AI project for NUST featuring Semantic Search and Hybrid Recomm
 ![Homepage](./docs/images/homepage.png)
 ![Search Results](./docs/images/search_results.png)
 
-## 🛠️ Quick Start (Local Only)
+## 🛠️ Quick Start 
 
 1. **Install Dependencies:**
    ```bash
