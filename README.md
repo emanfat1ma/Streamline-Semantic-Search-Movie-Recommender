@@ -32,12 +32,6 @@ An undergraduate AI project for NUST featuring Semantic Search and Hybrid Recomm
 * **AI/ML:** PyTorch, Scikit-Learn
 ```
 
----
-
-### **How to add the images *while* editing the README on GitHub:**
-1.  **Upload first:** Before editing the README, go to your repo, click **Add file** -> **Upload files**, and upload your screenshots into a folder named `docs/images/`.
-2.  **Edit README:** Now open the `README.md` editor.
-3.  **Insert:** Click the **Image icon** in the GitHub toolbar or just keep the `![Alt Text](./path/to/image.png)` lines I put in the code above. 
 4.  **Preview:** Click the **Preview** tab at the top of the editor to make sure the images appear before you hit **Commit**.
 
 http://googleusercontent.com/interactive_content_block/0
