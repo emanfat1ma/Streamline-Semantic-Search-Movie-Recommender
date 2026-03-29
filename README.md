@@ -31,7 +31,3 @@ An undergraduate AI project for NUST featuring Semantic Search and Hybrid Recomm
 * **Database:** SQLite
 * **AI/ML:** PyTorch, Scikit-Learn
 ```
-
-4.  **Preview:** Click the **Preview** tab at the top of the editor to make sure the images appear before you hit **Commit**.
-
-http://googleusercontent.com/interactive_content_block/0
