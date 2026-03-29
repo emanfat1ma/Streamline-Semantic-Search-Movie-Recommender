@@ -1,5 +1,8 @@
+import os
 import sqlite3
-from db import get_db
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from api.db import get_db
 from model.search_model import semantic_search
 from model.recommendation_model import hybrid_recommend, top_rated_bayesian, user_likes
 from model.user_model import like_movie as like_movie_db, get_favorite_movie_for_user
@@ -10,12 +13,18 @@ import pandas as pd
 import hashlib
 from model.user_model import get_user_profiles, switch_active_profile, get_watchlist, add_to_watchlist, remove_from_watchlist, is_in_watchlist, create_profile
 
-app = Flask(__name__)
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__,
+            template_folder=os.path.join(base_dir, '..', 'templates'),
+            static_folder=os.path.join(base_dir, '..', 'static'))
 app.secret_key = "supersecretkey"   # change in real project
 
-movies = pd.read_csv("data/movies_clean_with_posters.csv")
 
-# --- MISSING BUT NECESSARY FUNCTION ---
+data_path = os.path.join(base_dir, "..", "data", "movies_clean_with_posters.csv")
+
+movies = pd.read_csv(data_path)
+
 def get_db_connection():
     """Connects to the database and sets row_factory for column access."""
     conn = sqlite3.connect("data/database.db")
